@@ -356,17 +356,16 @@ create_server = function(
 # 3. Connect to the server and establish
 #    websocket or fail.
 # Use the same callback functions as with server.
-`websocket` = function(url,port=80,subprotocol="chat", version=0)
+`websocket` = function(url,port=80, version=13)
 {
   nonce = as.raw(replicate(16,floor(runif(1)*256)))
-  h = paste("GET / HTTP/1.1",sep="")
-  h = paste(h, "Upgrade: WebSocket", sep="\r\n")
+  h = paste("GET /mtgox HTTP/1.1",sep="")
+  h = paste(h, "Upgrade: websocket", sep="\r\n")
   h = paste(h, "Connection: Upgrade", sep="\r\n")
-  u = gsub("^.*://","",url)
+  u = "websocket.mtgox.com"
   ur = paste("Host:",u)
   h = paste(h, ur, sep="\r\n")
-  p = paste("Sec-WebSocket-Protocol:",subprotocol)
-  h = paste(h, p, sep="\r\n")
+  #p = paste("Sec-WebSocket-Protocol:",subprotocol)
   if(version==0) {
 # This is so dumb.
     spaces1 = round(runif(1)*12)+1
@@ -415,11 +414,11 @@ create_server = function(
     h = charToRaw(h)
     h = c(h, key3)
   } else {
-    h = paste(h, "Sec-WebSocket-Origin: r", sep="\r\n")
+    h = paste(h, "Origin: file://", sep="\r\n")
     ver = paste("Sec-WebSocket-Version:",version)
-    h = paste(h, ver, sep="\r\n")
     k = paste("Sec-WebSocket-Key:",base64encode(nonce))
     h = paste(h, k, sep="\r\n")
+    h = paste(h, ver, sep="\r\n")
     h = paste(h,"\r\n\r\n")
   }
 
